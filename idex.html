@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Super Puppo - Bem-vindo</title>
+<style>
+    /* Doces caindo */
+    #doces {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 1000;
+    }
+
+    .docinho {
+        position: absolute;
+        font-size: 24px;
+        animation-name: cair;
+        animation-timing-function: linear;
+    }
+
+    @keyframes cair {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(100vh); }
+    }
+
+    /* Porta */
+    .porta { display: flex; justify-content: center; align-items: center; margin-bottom: 20px; }
+    .porta-frente { font-size: 80px; transition: transform 1s; }
+    .aberta .porta-frente { transform: rotateY(90deg); }
+
+    /* Retângulo azul claro */
+    .retangulo-produtos {
+        background-color: #add8e6;
+        width: 200px;
+        padding: 10px;
+        margin: 10px auto;
+        text-align: center;
+        border-radius: 8px;
+        font-weight: bold;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    }
+
+    table { width: 90%; margin: 10px auto; border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background-color: #ffd700; }
+</style>
+</head>
+<body>
+<!-- Tela de entrada -->
+<div id="entrada">
+    <div id="porta" class="porta">
+        <div class="porta-frente">🏪</div>
+    </div>
+    <h1>🛒 Seja bem-vindo ao Super Puppo! 🛒</h1>
+    <p>Aproveite e compre tudo que quiser!</p>
+    <button id="btnEntrar">Abrir a Porta</button>
+    <div id="doces"></div>
+    <audio id="somPorta" src="porta.mp3"></audio>
+</div>
+
+<!-- Mercado -->
+<div id="mercado" style="display:none;">
+    <div class="header-mercado" style="text-align:center; margin-bottom:10px;">
+        <span class="emoji">🛒🍎🛍️👨‍👩‍👧‍👦 <strong>Super Puppo</strong> — venha, que a casa é sua!</span>
+    </div>
+
+    <h1 style="text-align:center;">Produtos Disponíveis</h1>
+
+    <!-- Retângulo azul claro -->
+    <div class="retangulo-produtos">Lista de Produtos</div>
+
+    <button id="btnMaisMenos" style="display:block; margin:10px auto;">Mais produtos meus clientes</button>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Preço</th>
+                <th>Quantidade</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="tabelaProdutos"></tbody>
+    </table>
+
+    <h3 style="text-align:center;">Carrinho</h3>
+    <ul id="listaCarrinho" style="width:90%; margin:auto;"></ul>
+    <p id="totalCarrinho" style="text-align:center;">Total: R$ 0.00</p>
+    <div style="text-align:center;">
+        <button id="btnLimpar">Limpar Carrinho</button>
+        <button id="btnFinalizar">Finalizar Compra</button>
+    </div>
+
+    <div id="caixa" style="display:none; text-align:center;">
+        <div id="resumoPagamento"></div>
+        <p id="mensagemFinal"></p>
+        <button onclick="pagar('dinheiro')">Dinheiro 💵</button>
+        <button onclick="pagar('debito')">Cartão Débito 💳</button>
+        <button onclick="pagar('credito')">Cartão Crédito 💳</button>
+    </div>
+</div>
+
+<script>
+// --- Variáveis ---
+let mostrandoMais = false;
+const produtosPorCategoria = 5;
+
+const produtos = [
+    { id: 1, categoria: "Doces", nome: "🍬 Bala Sortida 100g", preco: 3.50 },
+    { id: 2, categoria: "Doces", nome: "🍫 Chocolate Ao Leite 90g", preco: 4.50 },
+    { id: 3, categoria: "Doces", nome: "🧁 Cupcake Doce", preco: 5.00 },
+    { id: 4, categoria: "Doces", nome: "🍩 Donut Recheado", preco: 4.20 },
+    { id: 5, categoria: "Doces", nome: "🍪 Biscoito Recheado 200g", preco: 5.50 },
+    { id: 6, categoria: "Doces", nome: "🍫 Bombom Sortido 200g", preco: 9.00 },
+    { id: 7, categoria: "Doces", nome: "🍭 Pirulito Gigante", preco: 2.50 },
+    { id: 8, categoria: "Doces", nome: "🍬 Jujuba Sortida 50g", preco: 3.00 },
+    { id: 9, categoria: "Bebidas", nome: "🥤 Refrigerante Cola 2L", preco: 9.50 },
+    { id: 10, categoria: "Bebidas", nome: "🍊 Suco de Laranja 1L", preco: 6.80 },
+    { id: 11, categoria: "Bebidas", nome: "🧃 Suco Natural 1L", preco: 7.00 },
+    { id: 12, categoria: "Bebidas", nome: "☕ Café Torrado 500g", preco: 12.50 },
+    { id: 13, categoria: "Alimentos", nome: "🍚 Arroz 5kg", preco: 25.50 },
+    { id: 14, categoria: "Alimentos", nome: "🫘 Feijão Carioca 1kg", preco: 8.90 },
+    { id: 15, categoria: "Alimentos", nome: "🛢️ Óleo de Soja 900ml", preco: 7.50 },
+    // Novos produtos
+    { id: 16, categoria: "Doces", nome: "🍫 Trufa Recheada", preco: 6.50 },
+    { id: 17, categoria: "Bebidas", nome: "🍹 Suco Tropical 1L", preco: 8.50 },
+    { id: 18, categoria: "Alimentos", nome: "🥖 Pão Francês 500g", preco: 7.20 },
+];
+
+// --- Chuva de doces ---
+const docesEmojis = ["🍭", "🍬", "🍫", "🍩", "🧁", "🍎", "🍊", "🥤"];
+const docesContainer = document.getElementById("doces");
+
+function criarDoce() {
+    const doce = document.createElement("div");
+    doce.classList.add("docinho");
+    doce.style.left = Math.random() * window.innerWidth + "px";
+    doce.style.fontSize = (16 + Math.random() * 24) + "px";
+    doce.style.animationDuration = (3 + Math.random() * 4) + "s";
+    doce.textContent = docesEmojis[Math.floor(Math.random() * docesEmojis.length)];
+    docesContainer.appendChild(doce);
+    setTimeout(() => { if(docesContainer.contains(doce)) docesContainer.removeChild(doce); }, 6000);
+}
+
+// --- Abrir porta ---
+document.getElementById("btnEntrar").addEventListener("click", () => {
+    document.getElementById("porta").classList.add("aberta");
+    const som = document.getElementById("somPorta"); if(som) som.play();
+
+    for(let i=0;i<50;i++) criarDoce();
+    setInterval(criarDoce, 200);
+
+    setTimeout(() => {
+        document.getElementById("entrada").style.display = "none";
+        document.getElementById("mercado").style.display = "block";
+        carregarProdutos();
+    }, 1000);
+});
+
+// --- Carregar produtos ---
+function carregarProdutos() {
+    const tabela = document.getElementById("tabelaProdutos");
+    tabela.innerHTML = "";
+    const categorias = [...new Set(produtos.map(p => p.categoria))];
+
+    categorias.forEach(cat => {
+        const trCat = document.createElement("tr");
+        trCat.innerHTML = `<td colspan="5" style="background:#ffd700;font-weight:bold;">${cat}</td>`;
+        tabela.appendChild(trCat);
+
+        let produtosCat = produtos.filter(p => p.categoria === cat);
+        if(!mostrandoMais) produtosCat = produtosCat.slice(0, produtosPorCategoria);
+
+        produtosCat.forEach(p => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${p.id}</td>
+                <td>${p.nome}</td>
+                <td>R$ ${p.preco.toFixed(2)}</td>
+                <td>∞</td>
+                <td><button onclick="adicionarCarrinho(${p.id})">Adicionar ao carrinho</button></td>
+            `;
+            tabela.appendChild(tr);
+        });
+    });
+
+    document.getElementById("btnMaisMenos").textContent =
+        mostrandoMais ? "Menos produtos meus clientes" : "Mais produtos meus clientes";
+}
+
+document.getElementById("btnMaisMenos").addEventListener("click", () => {
+    mostrandoMais = !mostrandoMais;
+    carregarProdutos();
+});
+
+// --- Carrinho ---
+let carrinho = [];
+function adicionarCarrinho(id) {
+    const produto = produtos.find(p => p.id === id);
+    if(!produto) return;
+    carrinho.push(produto);
+    atualizarCarrinho();
+}
+
+function atualizarCarrinho() {
+    const lista = document.getElementById("listaCarrinho");
+    lista.innerHTML = "";
+    let total = 0;
+    carrinho.forEach(p => {
+        const li = document.createElement("li");
+        li.textContent = `${p.nome} - R$ ${p.preco.toFixed(2)}`;
+        lista.appendChild(li);
+        total += p.preco;
+    });
+    document.getElementById("totalCarrinho").textContent = `Total: R$ ${total.toFixed(2)}`;
+}
+
+function pagar(forma) {
+    let formaPagamento = forma === "dinheiro" ? "Dinheiro 💵" :
+                         forma === "debito" ? "Cartão Débito 💳" : "Cartão Crédito 💳";
+    document.getElementById("mensagemFinal").innerHTML =
+        `Pagamento confirmado via ${formaPagamento}. Todos os produtos foram pagos. 🛒😊`;
+    carrinho = [];
+    atualizarCarrinho();
+}
+</script>
+</body>
+</html>

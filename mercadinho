@@ -1,0 +1,7 @@
+mercadinho/
+└─ frontend/
+   ├─ index.html
+   ├─ style.css
+   ├─ script.js
+   └─ assets/
+       └─ logo-fundo.png  ← coloque a imagem aqui

@@ -1,0 +1,153 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    background: #f2f2f2;
+}
+
+/* Tela de entrada */
+.telaEntrada {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(to bottom, #87cefa, #f0e68c);
+}
+
+.telaEntrada h1 {
+    font-size: 3em;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px #fff;
+}
+
+.telaEntrada p {
+    font-size: 1.5em;
+    margin-bottom: 30px;
+}
+
+.telaEntrada button {
+    font-size: 1.2em;
+    padding: 15px 30px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.telaEntrada button:hover {
+    background-color: #45a049;
+}
+
+/* Porta animada */
+.porta {
+    width: 150px;
+    height: 200px;
+    margin-bottom: 20px;
+    background: #8B4513;
+    border: 5px solid #654321;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    transition: transform 1s ease;
+}
+
+.porta.aberta {
+    transform: translateX(-200%);
+}
+
+.porta-frente {
+    font-size: 4em;
+}
+
+/* Doces caindo */
+.docinho {
+    position: absolute;
+    font-size: 2em;
+    animation: cair 5s linear infinite;
+}
+
+@keyframes cair {
+    0% { top: -50px; transform: rotate(0deg); }
+    100% { top: 100vh; transform: rotate(360deg); }
+}
+
+/* Mercado */
+.header-mercado {
+    background-color: #87cefa;
+    color: #fff;
+    text-align: center;
+    padding: 15px;
+    font-size: 1.5em;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+/* Tabela de produtos */
+table {
+    width: 90%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+}
+
+th, td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Botões */
+button {
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    transition: 0.3s;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Linhas de categoria */
+.tr-categoria {
+    font-weight: bold;
+    color: #fff;
+    font-size: 1.1em;
+    text-align: center;
+}
+
+/* Doces */
+.tr-categoria.doces {
+    background-color: #ff69b4; /* rosa */
+}
+
+/* Bebidas */
+.tr-categoria.bebidas {
+    background-color: #1e90ff; /* azul */
+}
+
+/* Alimentos */
+.tr-categoria.alimentos {
+    background-color: #32cd32; /* verde */
+}
